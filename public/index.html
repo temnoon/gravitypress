@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polar Graph Designer</title>
+    <style>
+        canvas { border: 1px solid black; }
+        .input-group { margin-bottom: 10px; }
+        #polarGraph { cursor: crosshair; }
+    </style>
+</head>
+<body>
+    <h1>Polar Graph Designer</h1>
+    
+    <div class="input-group">
+        <label for="canvasSize">Canvas Size:</label>
+        <input type="number" id="canvasSize" value="1500" min="100" max="3000">
+    </div>
+    
+    <div class="input-group">
+        <label for="circles">Number of Circles:</label>
+        <input type="number" id="circles" value="64" min="1" max="500">
+    </div>
+    
+    <div class="input-group">
+        <label for="spokes">Number of Spokes:</label>
+        <input type="number" id="spokes" value="36" min="4" max="360">
+    </div>
+    
+    <div class="input-group">
+        <label for="circleThicknesses">Circle Thicknesses:</label>
+        <input type="text" id="circleThicknesses" value="1, 0.2, .3, 0.4, 0.5, 0.6, 0.7">
+    </div>
+    
+    <div class="input-group">
+        <label for="spokeThicknesses">Spoke Thicknesses:</label>
+        <input type="text" id="spokeThicknesses" value="2, 0.4, 0.4, 0.6, 0.4, 0.4, 2">
+    </div>
+    
+    <div class="input-group">
+        <label for="startCircles">Start Circles:</label>
+        <input type="text" id="startCircles" value="0">
+    </div>
+    
+    <div class="input-group">
+        <label for="endCircles">End Circles:</label>
+        <input type="text" id="endCircles" value="">
+    </div>
+    
+    <div class="input-group">
+        <label for="extendCircles">Allow circles beyond frame:</label>
+        <input type="checkbox" id="extendCircles">
+    </div>
+    
+    <div class="input-group">
+        <label for="symmetry">Symmetry:</label>
+        <select id="symmetry">
+            <option value="1">No symmetry</option>
+            <option value="2">2-fold</option>
+            <option value="4">4-fold</option>
+            <option value="8">8-fold</option>
+        </select>
+        <button onclick="applySymmetry()">Apply Symmetry</button>
+    </div>
+    
+    <div class="input-group">
+        <label for="selectionMode">Selection Mode:</label>
+        <input type="checkbox" id="selectionMode">
+    </div>
+    
+    <div class="input-group">
+        <label for="selectedThickness">Selected Thickness:</label>
+        <input type="number" id="selectedThickness" value="1" min="0.1" max="10" step="0.1">
+        <button onclick="applySelectedThickness()">Apply Thickness</button>
+    </div>
+    
+    <button onclick="updateGraph()">Update Graph</button>
+    
+    <br><br>
+    
+    <canvas id="polarGraph"></canvas>
+    
+    <script src="js/polarGraph.js"></script>
+</body>
+</html>

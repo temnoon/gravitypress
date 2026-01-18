@@ -1,0 +1,19 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "api": {
+    "polarGraph": "/api/polar-graph",
+    "notebookBuilder": "/api/notebook-builder"
+  },
+  "components": {
+    "polarGraph": {
+      "defaultCircles": 5,
+      "defaultSpokes": 12
+    },
+    "notebookBuilder": {
+      "defaultPageSize": "A4",
+      "defaultOrientation": "portrait"
+    }
+  }
+}
