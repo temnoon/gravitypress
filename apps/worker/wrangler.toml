@@ -1,0 +1,16 @@
+name = "gravitypress-worker"
+main = "src/index.ts"
+compatibility_date = "2026-01-18"
+
+# Bindings (set these in Cloudflare dashboard/wrangler)
+# R2 for cached renders and catalog
+# KV/D1 optional for presets and metadata
+
+# Example:
+# [[r2_buckets]]
+# binding = "GP_R2"
+# bucket_name = "gravitypress-renders"
+
+[vars]
+NPE_API_BASE = "https://npe-api.tem-527.workers.dev"
+# HUMANIZER_API_BASE = "https://api.humanizer.com"

@@ -1,16 +1,19 @@
 {
   "name": "gravitypress",
-  "version": "1.0.0",
-  "description": "GravityPress application",
-  "main": "server.js",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": { "node": ">=20" },
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "dependencies": {
-    "express": "^4.17.1"
+    "format": "prettier -w .",
+    "lint": "eslint .",
+    "typecheck": "tsc -b",
+    "dev:web": "pnpm -C apps/web dev",
+    "dev:worker": "pnpm -C apps/worker dev",
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "prettier": "^3.3.3"
   }
 }
