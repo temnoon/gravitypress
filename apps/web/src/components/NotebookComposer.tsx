@@ -6,6 +6,7 @@ import { CoverCustomizer } from "./CoverCustomizer";
 import { PrintSpecSelector } from "./PrintSpecSelector";
 import { ExportPanel } from "./ExportPanel";
 import { GutenbergPrompts } from "./GutenbergPrompts";
+import { PageConfigurator } from "./PageConfigurator";
 
 const TABS = [
   { key: "pages", label: "Pages" },
@@ -16,6 +17,9 @@ const TABS = [
 
 export function NotebookComposer() {
   const { state, dispatch } = useNotebook();
+
+  const selectedPage = state.selectedPageIndex !== null ? state.pages[state.selectedPageIndex] : null;
+  const isEditing = selectedPage !== null && state.activePanel === "pages";
 
   return (
     <div className="composer">
@@ -34,7 +38,7 @@ export function NotebookComposer() {
         </div>
 
         <div className="composer-panel">
-          {state.activePanel === "pages" && (
+          {state.activePanel === "pages" && !isEditing && (
             <>
               <PageTypePicker
                 trimSize={state.printSpec.trimSize}
@@ -49,6 +53,15 @@ export function NotebookComposer() {
                 onClear={() => dispatch({ type: "CLEAR_PAGES" })}
               />
             </>
+          )}
+
+          {isEditing && selectedPage && (
+            <PageConfigurator
+              config={selectedPage.config}
+              pageIndex={state.selectedPageIndex!}
+              onChange={(i, config) => dispatch({ type: "UPDATE_PAGE", index: i, config })}
+              onClose={() => dispatch({ type: "SELECT_PAGE", index: null })}
+            />
           )}
 
           {state.activePanel === "gutenberg" && (

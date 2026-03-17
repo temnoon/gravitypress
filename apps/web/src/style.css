@@ -171,6 +171,61 @@ body {
 .picker-label { font-size: 11px; font-weight: 600; }
 .picker-desc { font-size: 10px; color: var(--text-muted); text-align: center; }
 
+/* Palette bar */
+.palette-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.palette-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.palette-swatch:hover { transform: scale(1.15); }
+.palette-swatch.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--bg-panel); }
+
+/* Preset panel */
+.preset-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preset-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.preset-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  transition: all 0.1s;
+}
+
+.preset-item:hover { border-color: var(--primary); background: var(--bg-selected); }
+
+.preset-name { font-weight: 500; }
+.preset-cat { font-size: 10px; color: var(--text-muted); }
+
 /* ---- Sequence Builder ---- */
 
 .sequence-builder {
@@ -486,6 +541,86 @@ body {
 }
 
 .btn-ghost:hover { color: var(--danger); }
+
+/* ---- Page Configurators ---- */
+
+.page-configurator {
+  animation: slideIn 0.15s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.configurator h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+
+.config-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.config-section legend {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  padding: 0 6px;
+}
+
+.config-val {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.config-hint {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.form-field.inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-field.inline span {
+  font-weight: 400;
+}
+
+.form-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+.form-field input[type="number"] {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  width: 100%;
+}
 
 /* ---- Gutenberg Prompts ---- */
 

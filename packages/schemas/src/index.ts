@@ -7,8 +7,18 @@ import { z } from "zod";
 export const PaperSize = z.enum(["LETTER", "A4", "A5", "HALF_LETTER"]);
 export type PaperSize = z.infer<typeof PaperSize>;
 
-export const ColorMode = z.enum(["SOLID", "GRADIENT", "RAINBOW"]);
+export const ColorMode = z.enum(["SOLID", "GRADIENT", "RAINBOW", "GRADIENT_PLUS"]);
 export type ColorMode = z.infer<typeof ColorMode>;
+
+export const GradientType = z.enum([
+  "radial-center",
+  "radial-edge",
+  "linear-horizontal",
+  "linear-vertical",
+  "linear-along",
+  "linear-across",
+]);
+export type GradientType = z.infer<typeof GradientType>;
 
 // Paper dimensions in inches
 export const PAPER_DIMENSIONS: Record<string, { width: number; height: number }> = {
@@ -37,19 +47,33 @@ export const PolarGridConfig = z.object({
   // polar specifics
   circles: z.number().int().min(1).max(400).default(24),
   spokes: z.number().int().min(1).max(360).default(24),
+  extendCircles: z.boolean().default(false), // extend circles to corners
 
+  // thickness patterns (cycle through array)
   circleThickness: z.array(z.number().min(0.1).max(10)).default([0.35]),
   spokeThickness: z.array(z.number().min(0.1).max(10)).default([0.35]),
 
-  circleColorMode: ColorMode.default("SOLID"),
-  spokeColorMode: ColorMode.default("SOLID"),
-  circleSolid: z.string().default("#000000"),
-  spokeSolid: z.string().default("#000000"),
+  // spoke start/end circles (cycle through array per spoke)
+  spokeStartCircles: z.array(z.number().int().min(0).max(400)).default([]),
+  spokeEndCircles: z.array(z.number().int().min(0).max(400)).default([]),
 
+  // circle color
+  circleColorMode: ColorMode.default("SOLID"),
+  circleSolid: z.string().default("#000000"),
+  circleGradientType: GradientType.default("radial-center"),
+  circleGradientStart: z.string().default("#000000"),
+  circleGradientEnd: z.string().default("#666666"),
+
+  // spoke color
+  spokeColorMode: ColorMode.default("SOLID"),
+  spokeSolid: z.string().default("#000000"),
+  spokeGradientType: GradientType.default("linear-along"),
+  spokeGradientStart: z.string().default("#000000"),
+  spokeGradientEnd: z.string().default("#666666"),
+
+  // rainbow settings (shared by circles and spokes)
   rainbowStartHue: z.number().min(0).max(360).default(0),
   rainbowEndHue: z.number().min(0).max(360).default(360),
-
-  spokeStartCircles: z.array(z.number().int().min(0).max(400)).default([])
 });
 
 export type PolarGridConfig = z.infer<typeof PolarGridConfig>;
