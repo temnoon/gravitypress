@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { CURATED_BOOKS } from "@gravitypress/core";
-import type { WritingPrompt } from "@gravitypress/core";
+import { useState, useEffect } from "react";
+import type { WritingPrompt, CuratedBook } from "@gravitypress/core";
 import type { PageConfig } from "@gravitypress/schemas";
 import { trimToPaper } from "../hooks/useNotebook";
 
@@ -18,14 +17,26 @@ export function GutenbergPrompts({ trimSize, onAddPages }: Props) {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<{ id: number; title: string; author: string } | null>(null);
+  const [selectedBook, setSelectedBook] = useState<{ id: number; title: string; author: string; nodeId?: string } | null>(null);
   const [prompts, setPrompts] = useState<WritingPrompt[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [promptCount, setPromptCount] = useState(30);
   const [responseType, setResponseType] = useState<"lined" | "blank" | "dot">("lined");
   const [error, setError] = useState("");
+  const [curatedBooks, setCuratedBooks] = useState<CuratedBook[]>([]);
 
   const paper = trimToPaper(trimSize);
+
+  // Load curated list (enriched with node IDs) on mount
+  useEffect(() => {
+    fetch(`${WORKER_BASE}/api/gutenberg/curated`)
+      .then((r) => r.json())
+      .then((d: any) => setCuratedBooks(d.books || []))
+      .catch(() => {
+        // Fallback: import static list
+        import("@gravitypress/core").then((m) => setCuratedBooks([...m.CURATED_BOOKS]));
+      });
+  }, []);
 
   async function searchBooks() {
     if (!search.trim()) return;
@@ -198,13 +209,16 @@ export function GutenbergPrompts({ trimSize, onAddPages }: Props) {
           {/* Curated list */}
           <div className="book-list">
             <div className="book-list-header">Curated Classics</div>
-            {CURATED_BOOKS.map((b) => (
+            {curatedBooks.map((b) => (
               <button
                 key={b.id}
                 className="book-item"
-                onClick={() => extractFromBook({ id: b.id, title: b.title, author: b.author })}
+                onClick={() => extractFromBook({ id: b.id, title: b.title, author: b.author, nodeId: b.nodeId })}
               >
-                <span className="book-title">{b.title}</span>
+                <span className="book-title">
+                  {b.title}
+                  {b.nodeId && <span className="node-badge" title={`${b.passages || '?'} pre-processed passages`}>enhanced</span>}
+                </span>
                 <span className="book-author">{b.author}</span>
                 <span className="book-cat">{b.category}</span>
               </button>

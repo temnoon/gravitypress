@@ -550,7 +550,18 @@ body {
 
 .book-item:hover { background: var(--bg-hover); }
 
-.book-title { flex: 1; font-weight: 500; }
+.book-title { flex: 1; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+
+.node-badge {
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  background: #00b894;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
 .book-author { color: var(--text-secondary); font-size: 12px; }
 .book-cat { font-size: 10px; color: var(--text-muted); background: var(--bg); padding: 1px 6px; border-radius: 3px; }
 

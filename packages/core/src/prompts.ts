@@ -286,7 +286,18 @@ export function extractPrompts(
 // Well-Known Gutenberg Books
 // ============================================
 
-export const CURATED_BOOKS = [
+export interface CuratedBook {
+  id: number;
+  title: string;
+  author: string;
+  category: string;
+  /** Set at runtime if a post-social node exists for this book */
+  nodeId?: string;
+  /** Number of pre-chunked passages available */
+  passages?: number;
+}
+
+export const CURATED_BOOKS: CuratedBook[] = [
   { id: 84, title: "Frankenstein", author: "Mary Shelley", category: "Gothic" },
   { id: 1342, title: "Pride and Prejudice", author: "Jane Austen", category: "Literature" },
   { id: 2701, title: "Moby-Dick", author: "Herman Melville", category: "Literature" },
@@ -307,4 +318,4 @@ export const CURATED_BOOKS = [
   { id: 35, title: "The Time Machine", author: "H.G. Wells", category: "Science Fiction" },
   { id: 36, title: "War of the Worlds", author: "H.G. Wells", category: "Science Fiction" },
   { id: 996, title: "Don Quixote", author: "Miguel de Cervantes", category: "Literature" },
-] as const;
+];

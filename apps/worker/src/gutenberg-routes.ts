@@ -50,9 +50,40 @@ export async function handleGutenbergRoute(
     }, corsHeaders);
   }
 
-  // ---- Curated book list ----
+  // ---- Curated book list (enriched with post-social node IDs when available) ----
   if (url.pathname === "/api/gutenberg/curated" && req.method === "GET") {
-    return jsonResponse(200, { books: CURATED_BOOKS }, corsHeaders);
+    const books = CURATED_BOOKS.map((b) => ({ ...b }));
+
+    // Try to enrich with post-social node data
+    try {
+      const psBase = "https://post-social-api.tem-527.workers.dev";
+      const nodesRes = await fetch(`${psBase}/api/nodes`);
+      if (nodesRes.ok) {
+        const nodesData = await nodesRes.json() as any;
+        const nodes = nodesData.nodes || nodesData || [];
+
+        // Match nodes to Gutenberg books by title similarity
+        for (const book of books) {
+          const titleLower = book.title.toLowerCase();
+          const match = nodes.find((n: any) => {
+            const nodeName = (n.name || n.title || "").toLowerCase();
+            // Match by title substring or Gutenberg ID in metadata
+            return nodeName.includes(titleLower) ||
+              titleLower.includes(nodeName) ||
+              n.gutenberg_id === book.id ||
+              n.metadata?.gutenbergId === book.id;
+          });
+          if (match) {
+            book.nodeId = match.id;
+            book.passages = match.chunk_count || match.passage_count || undefined;
+          }
+        }
+      }
+    } catch {
+      // Enrichment failed — return plain list
+    }
+
+    return jsonResponse(200, { books }, corsHeaders);
   }
 
   // ---- Get book structure (via npe-api preprocessor) ----
