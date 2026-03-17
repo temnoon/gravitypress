@@ -8,12 +8,15 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 // on a home printer. When printed double-sided (flip on short edge),
 // the sheets can be folded and stapled to form a booklet.
 //
-// For N pages (must be multiple of 4), each sheet has:
-//   Front side: page[N-1-i*2] (left) + page[i*2] (right)
-//   Back side:  page[i*2+1] (left) + page[N-2-i*2] (right)
+// Each physical sheet holds 4 booklet pages (2 per side).
+// The imposition order for N total pages, sheet i (0-indexed):
+//   Front: left = page[N-1 - i*2],  right = page[i*2]
+//   Back:  left = page[i*2 + 1],    right = page[N-2 - i*2]
+//
+// When you fold the stack in half and read left-to-right,
+// you get pages 1, 2, 3, ... N in order.
 //
 // Max supported: 32 sheets (128 pages), recommended 24 sheets (96 pages).
-// Sweet spot for saddle stitch: 12-24 sheets (48-96 pages).
 
 export interface BookletOptions {
   /** Maximum sheets. Pages beyond this are dropped. Default 24. */
@@ -30,14 +33,14 @@ export interface BookletOptions {
  * Input: a regular sequential PDF (page 1, 2, 3, ... N)
  * Output: a PDF with 2-up pages arranged for duplex printing.
  *
- * Each page of the output PDF is a sheet (letter/A4 landscape)
- * with two booklet pages side by side.
+ * Each output page is a landscape sheet with two booklet pages
+ * placed side by side at their original size and proportions.
  *
  * Print instructions:
  * 1. Print double-sided, flip on short edge
  * 2. Stack all sheets in order
  * 3. Fold the stack in half
- * 4. Staple along the spine
+ * 4. Staple along the spine (fold line)
  */
 export async function imposeBooklet(
   sourcePdf: Uint8Array,
@@ -64,10 +67,10 @@ export async function imposeBooklet(
   const firstPage = srcPages[0];
   const { width: pageWidth, height: pageHeight } = firstPage.getSize();
 
-  // Output sheet: landscape, two pages side by side
-  const sheetWidth = pageHeight * 2; // two page-heights wide
-  const sheetHeight = pageWidth; // one page-width tall
-  // Each half-page on the sheet is (pageHeight × pageWidth)
+  // Output sheet: landscape orientation
+  // Two source pages side by side, each at original size
+  const sheetWidth = pageWidth * 2;
+  const sheetHeight = pageHeight;
 
   const outDoc = await PDFDocument.create();
   outDoc.setCreator("GravityPress Booklet Imposer");
@@ -99,8 +102,8 @@ export async function imposeBooklet(
 
   for (let sheet = 0; sheet < totalSheets; sheet++) {
     // Front side: two pages
-    const frontLeft = totalPages - 1 - sheet * 2; // counts down from last page
-    const frontRight = sheet * 2; // counts up from first page
+    const frontLeft = totalPages - 1 - sheet * 2;
+    const frontRight = sheet * 2;
 
     // Back side: two pages
     const backLeft = sheet * 2 + 1;
@@ -109,23 +112,19 @@ export async function imposeBooklet(
     // ---- Front side ----
     const frontPage = outDoc.addPage([sheetWidth, sheetHeight]);
 
-    // Left half (frontLeft)
+    // Left half — draw at original size, positioned at left
     if (embeddedPages[frontLeft]) {
       frontPage.drawPage(embeddedPages[frontLeft]!, {
         x: 0,
         y: 0,
-        width: sheetWidth / 2,
-        height: sheetHeight,
       });
     }
 
-    // Right half (frontRight)
+    // Right half — draw at original size, positioned at midpoint
     if (embeddedPages[frontRight]) {
       frontPage.drawPage(embeddedPages[frontRight]!, {
-        x: sheetWidth / 2,
+        x: pageWidth,
         y: 0,
-        width: sheetWidth / 2,
-        height: sheetHeight,
       });
     }
 
@@ -147,23 +146,19 @@ export async function imposeBooklet(
     // ---- Back side ----
     const backPage = outDoc.addPage([sheetWidth, sheetHeight]);
 
-    // Left half (backLeft)
+    // Left half
     if (embeddedPages[backLeft]) {
       backPage.drawPage(embeddedPages[backLeft]!, {
         x: 0,
         y: 0,
-        width: sheetWidth / 2,
-        height: sheetHeight,
       });
     }
 
-    // Right half (backRight)
+    // Right half
     if (embeddedPages[backRight]) {
       backPage.drawPage(embeddedPages[backRight]!, {
-        x: sheetWidth / 2,
+        x: pageWidth,
         y: 0,
-        width: sheetWidth / 2,
-        height: sheetHeight,
       });
     }
   }
@@ -172,8 +167,7 @@ export async function imposeBooklet(
 }
 
 /**
- * Convenience: compose pages, then impose as booklet.
- * Pads to multiple of 4, adds fold mark.
+ * Get booklet page count info for a given number of content pages.
  */
 export function getBookletPageCount(contentPages: number): {
   totalPages: number;
