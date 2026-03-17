@@ -7,7 +7,13 @@ const PolarGraphDesigner = () => {
   const [spokes, setSpokes] = useState(config.components.polarGraph.defaultSpokes);
 
   // Component logic here
-
+let spokeColor;
+if (colorMode === 'rainbow') {
+  spokeColor = `hsl(${(i / spokes) * 360}, 100%, 50%)`;
+} else {
+  spokeColor = spokeGradient;
+}
+spoke.stroke({ color: spokeColor, /* ... */ });
   return (
     <div>
       <h2>Polar Graph Designer</h2>

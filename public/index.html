@@ -4,83 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polar Graph Designer</title>
-    <style>
-        canvas { border: 1px solid black; }
-        .input-group { margin-bottom: 10px; }
-        #polarGraph { cursor: crosshair; }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.1/svg.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h1>Polar Graph Designer</h1>
-    
-    <div class="input-group">
-        <label for="canvasSize">Canvas Size:</label>
-        <input type="number" id="canvasSize" value="1500" min="100" max="3000">
+    <div class="container">
+        <div id="controls">
+            <h2>Polar Graph Designer</h2>
+            
+            <!-- Main Settings -->
+            <div class="main-settings">
+                <label for="canvasSize">Canvas Size:</label>
+                <input type="number" id="canvasSize" value="1500" min="100" max="3000">
+                
+                <label for="circles">Number of Circles:</label>
+                <input type="number" id="circles" value="53" min="1" max="500">
+                
+                <label for="spokes">Number of Spokes:</label>
+                <input type="number" id="spokes" value="48" min="4" max="360">
+                
+                <label for="extendCircles">Allow circles beyond frame:</label>
+                <input type="checkbox" id="extendCircles" checked>
+            </div>
+		<select id="spokeColorMode">
+		  <option value="gradient">Gradient</option>
+		  <option value="rainbow">Rainbow</option>
+		</select>
+		<div class="input-group">
+			<label for="showDiagnosticLabels">Show Diagnostic Labels:</label>
+			<input type="checkbox" id="showDiagnosticLabels" checked>
+		</div>
+<div class="input-group">
+    <label for="circleColorMode">Circle Color Mode:</label>
+    <select id="circleColorMode">
+        <option value="solid">Solid Color</option>
+        <option value="gradient">SVG Gradient</option>
+        <option value="rainbow">Rainbow</option>
+        <option value="gradientPlus">Smooth Gradient</option>
+    </select>
+</div>
+
+<div class="input-group">
+    <label for="spokeColorMode">Spoke Color Mode:</label>
+    <select id="spokeColorMode">
+        <option value="solid">Solid Color</option>
+        <option value="gradient">SVG Gradient</option>
+        <option value="rainbow">Rainbow</option>
+        <option value="gradientPlus">Smooth Gradient</option>
+    </select>
+</div>
+            <!-- Accordion sections -->
+            
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header">Circle Properties</button>
+                    <div class="accordion-content">
+                        <label for="circleThicknesses">Circle Thicknesses:</label>
+                        <input type="text" id="circleThicknesses" value="1, 0.2, .3, 0.4, 0.5, 0.6, 0.7">
+                        
+                        <label for="circleGradientType">Circle Gradient Type:</label>
+                        <select id="circleGradientType">
+                            <option value="radial-center">Radial from Center</option>
+                            <option value="radial-edge">Radial from Edge</option>
+                            <option value="linear-horizontal">Linear Horizontal</option>
+                            <option value="linear-vertical">Linear Vertical</option>
+                        </select>
+                        
+                        <label for="circleGradientStart">Circle Gradient Start:</label>
+                        <input type="color" id="circleGradientStart" value="#000000">
+                        
+                        <label for="circleGradientEnd">Circle Gradient End:</label>
+                        <input type="color" id="circleGradientEnd" value="#000000">
+                    </div>
+                </div>
+        
+                <div class="accordion-item">
+                    <button class="accordion-header">Spoke Properties</button>
+                    <div class="accordion-content">
+                        <label for="spokeThicknesses">Spoke Thicknesses:</label>
+                        <input type="text" id="spokeThicknesses" value="1, .3, .6, .3, 1, .3, .6, .3, 1, .3, .6, .3">
+                        
+                        <label for="startCircles">Start Circles:</label>
+                        <input type="text" id="startCircles" value="0,3,6,5,3,1,2,6,5,3,0,3,6,5,3,6,3">
+                        
+                        <label for="endCircles">End Circles:</label>
+                        <input type="text" id="endCircles" value="25,30,40,50,60">
+                        
+                        <label for="spokeGradientType">Spoke Gradient Type:</label>
+                        <select id="spokeGradientType">
+                            <option value="linear-along">Linear Along Spoke</option>
+                            <option value="linear-across">Linear Across Spoke</option>
+                            <option value="radial-center">Radial from Center</option>
+                            <option value="radial-edge">Radial from Edge</option>
+                        </select>
+                        
+                        <label for="spokeGradientStart">Spoke Gradient Start:</label>
+                        <input type="color" id="spokeGradientStart" value="#000000">
+                        
+                        <label for="spokeGradientEnd">Spoke Gradient End:</label>
+                        <input type="color" id="spokeGradientEnd" value="#000000">
+                    </div>
+                </div>
+        
+                <div class="accordion-item">
+                    <button class="accordion-header">Export Options</button>
+                    <div class="accordion-content">
+                        <button onclick="exportSVG()">Export SVG</button>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Configuration Management -->
+            <div class="config-management">
+                <label for="configName">Configuration Name:</label>
+                <input type="text" id="configName">
+                <button onclick="saveConfiguration()">Save Configuration</button>
+                
+                <label for="loadConfig">Load Configuration:</label>
+                <select id="loadConfig" onchange="loadConfiguration()">
+                    <option value="">Select a configuration</option>
+                </select>
+            </div>
+        </div>
+        <div id="graph-container"></div>
     </div>
-    
-    <div class="input-group">
-        <label for="circles">Number of Circles:</label>
-        <input type="number" id="circles" value="64" min="1" max="500">
-    </div>
-    
-    <div class="input-group">
-        <label for="spokes">Number of Spokes:</label>
-        <input type="number" id="spokes" value="36" min="4" max="360">
-    </div>
-    
-    <div class="input-group">
-        <label for="circleThicknesses">Circle Thicknesses:</label>
-        <input type="text" id="circleThicknesses" value="1, 0.2, .3, 0.4, 0.5, 0.6, 0.7">
-    </div>
-    
-    <div class="input-group">
-        <label for="spokeThicknesses">Spoke Thicknesses:</label>
-        <input type="text" id="spokeThicknesses" value="2, 0.4, 0.4, 0.6, 0.4, 0.4, 2">
-    </div>
-    
-    <div class="input-group">
-        <label for="startCircles">Start Circles:</label>
-        <input type="text" id="startCircles" value="0">
-    </div>
-    
-    <div class="input-group">
-        <label for="endCircles">End Circles:</label>
-        <input type="text" id="endCircles" value="">
-    </div>
-    
-    <div class="input-group">
-        <label for="extendCircles">Allow circles beyond frame:</label>
-        <input type="checkbox" id="extendCircles">
-    </div>
-    
-    <div class="input-group">
-        <label for="symmetry">Symmetry:</label>
-        <select id="symmetry">
-            <option value="1">No symmetry</option>
-            <option value="2">2-fold</option>
-            <option value="4">4-fold</option>
-            <option value="8">8-fold</option>
-        </select>
-        <button onclick="applySymmetry()">Apply Symmetry</button>
-    </div>
-    
-    <div class="input-group">
-        <label for="selectionMode">Selection Mode:</label>
-        <input type="checkbox" id="selectionMode">
-    </div>
-    
-    <div class="input-group">
-        <label for="selectedThickness">Selected Thickness:</label>
-        <input type="number" id="selectedThickness" value="1" min="0.1" max="10" step="0.1">
-        <button onclick="applySelectedThickness()">Apply Thickness</button>
-    </div>
-    
-    <button onclick="updateGraph()">Update Graph</button>
-    
-    <br><br>
-    
-    <canvas id="polarGraph"></canvas>
-    
-    <script src="js/polarGraph.js"></script>
+    <script src="/js/polarGraph.js"></script>
 </body>
 </html>

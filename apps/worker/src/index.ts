@@ -1,9 +1,15 @@
-import { RenderRequest } from "@gravitypress/schemas";
-import { renderPolarGridSVG } from "@gravitypress/core";
+import { PageConfig } from "@gravitypress/schemas";
+import { renderPageSVG } from "@gravitypress/core";
+import { handleLuluRoute } from "./lulu-routes";
 
 type Env = {
   NPE_API_BASE: string;
   HUMANIZER_API_BASE?: string;
+  LULU_CLIENT_ID: string;
+  LULU_CLIENT_SECRET: string;
+  LULU_API_BASE?: string;
+  LULU_SANDBOX_CLIENT_ID?: string;
+  LULU_SANDBOX_CLIENT_SECRET?: string;
   // GP_R2: R2Bucket;
 };
 
@@ -14,6 +20,8 @@ function cors(origin: string | null) {
     origin === "https://humanizer.com" ||
     origin.endsWith(".gravitypress.org") ||
     origin === "https://gravitypress.org" ||
+    origin.endsWith(".gravity-press.com") ||
+    origin === "https://gravity-press.com" ||
     origin.startsWith("http://localhost:")
   );
   return {
@@ -50,15 +58,14 @@ export default {
     // Public, offline-friendly endpoint: render SVG without auth
     if (url.pathname === "/api/render/svg" && req.method === "POST") {
       const json = await req.json().catch(() => null);
-      const parsed = RenderRequest.safeParse(json);
+      const parsed = PageConfig.safeParse(json);
       if (!parsed.success) {
         return new Response(JSON.stringify({ error: "Invalid request", details: parsed.error.issues }), {
           status: 400,
           headers: { "Content-Type": "application/json", ...cors(origin) }
         });
       }
-      const { config } = parsed.data;
-      const svg = renderPolarGridSVG(config);
+      const svg = renderPageSVG(parsed.data);
       return new Response(JSON.stringify({ svg }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...cors(origin) }
@@ -73,8 +80,11 @@ export default {
       });
     }
 
-    // Auth-required endpoints
+    // Lulu routes (some public, some auth-required — handled internally)
     const auth = await verifyAuth(env, req.headers.get("Authorization"));
+
+    const luluResponse = await handleLuluRoute(req, url, env, cors(origin), auth);
+    if (luluResponse) return luluResponse;
     if (!auth) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
