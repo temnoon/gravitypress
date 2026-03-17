@@ -76,6 +76,7 @@ export const BindingType = z.enum([
   "CO", // Coil
   "LW", // Linen Wrap (hardcover)
   "CW", // Casewrap (hardcover)
+  "SS", // Saddle Stitch
 ]);
 export type BindingType = z.infer<typeof BindingType>;
 
@@ -84,6 +85,7 @@ export const BINDING_LABELS: Record<string, string> = {
   CO: "Coil Bound",
   LW: "Linen Wrap Hardcover",
   CW: "Casewrap Hardcover",
+  SS: "Saddle Stitch",
 };
 
 export const PaperStock = z.enum([

@@ -7,6 +7,10 @@ export { renderPromptPageSVG } from "./prompt";
 export { LuluClient, buildPodPackageId, calculateSpineWidth } from "./lulu";
 export { PDFComposer, composePDF } from "./pdf";
 export type { PageContent, TextStyle, PageNumberConfig, ColophonMeta } from "./pdf";
+export { generateCoverPDF, calculateCoverDimensions } from "./cover";
+export type { CoverConfig, CoverDimensions } from "./cover";
+export { imposeBooklet, getBookletPageCount } from "./booklet";
+export type { BookletOptions } from "./booklet";
 
 import type { PageConfig } from "@gravitypress/schemas";
 import { renderPolarGridSVG } from "./polar";
