@@ -15,7 +15,7 @@ export interface NotebookState {
   pages: SequenceEntry[];
   cover: CoverConfig;
   printSpec: PrintSpec;
-  activePanel: "pages" | "cover" | "print" | "export";
+  activePanel: "pages" | "gutenberg" | "cover" | "print" | "export";
   selectedPageIndex: number | null;
   previewPageIndex: number;
 }

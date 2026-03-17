@@ -1,6 +1,7 @@
 import { PageConfig } from "@gravitypress/schemas";
 import { renderPageSVG } from "@gravitypress/core";
 import { handleLuluRoute } from "./lulu-routes";
+import { handleGutenbergRoute } from "./gutenberg-routes";
 
 type Env = {
   NPE_API_BASE: string;
@@ -79,6 +80,10 @@ export default {
         headers: { "Content-Type": "application/json", ...cors(origin) }
       });
     }
+
+    // Gutenberg routes (all public)
+    const gutenbergResponse = await handleGutenbergRoute(req, url, cors(origin), env);
+    if (gutenbergResponse) return gutenbergResponse;
 
     // Lulu routes (some public, some auth-required — handled internally)
     const auth = await verifyAuth(env, req.headers.get("Authorization"));

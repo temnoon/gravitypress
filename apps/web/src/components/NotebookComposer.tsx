@@ -5,9 +5,11 @@ import { NotebookPreview } from "./NotebookPreview";
 import { CoverCustomizer } from "./CoverCustomizer";
 import { PrintSpecSelector } from "./PrintSpecSelector";
 import { ExportPanel } from "./ExportPanel";
+import { GutenbergPrompts } from "./GutenbergPrompts";
 
 const TABS = [
   { key: "pages", label: "Pages" },
+  { key: "gutenberg", label: "Gutenberg" },
   { key: "cover", label: "Cover" },
   { key: "print", label: "Print" },
 ] as const;
@@ -47,6 +49,13 @@ export function NotebookComposer() {
                 onClear={() => dispatch({ type: "CLEAR_PAGES" })}
               />
             </>
+          )}
+
+          {state.activePanel === "gutenberg" && (
+            <GutenbergPrompts
+              trimSize={state.printSpec.trimSize}
+              onAddPages={(configs) => dispatch({ type: "ADD_PAGES", configs })}
+            />
           )}
 
           {state.activePanel === "cover" && (

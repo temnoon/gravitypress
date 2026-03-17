@@ -11,6 +11,8 @@ export { generateCoverPDF, calculateCoverDimensions } from "./cover";
 export type { CoverConfig, CoverDimensions } from "./cover";
 export { imposeBooklet, getBookletPageCount } from "./booklet";
 export type { BookletOptions } from "./booklet";
+export { extractPrompts, extractPassages, CURATED_BOOKS } from "./prompts";
+export type { WritingPrompt, PromptType, ExtractOptions } from "./prompts";
 
 import type { PageConfig } from "@gravitypress/schemas";
 import { renderPolarGridSVG } from "./polar";
