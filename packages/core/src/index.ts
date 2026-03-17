@@ -5,6 +5,8 @@ export { renderCartesianGridSVG } from "./cartesian";
 export { renderBlankPageSVG } from "./blank";
 export { renderPromptPageSVG } from "./prompt";
 export { LuluClient, buildPodPackageId, calculateSpineWidth } from "./lulu";
+export { PDFComposer, composePDF } from "./pdf";
+export type { PageContent, TextStyle, PageNumberConfig, ColophonMeta } from "./pdf";
 
 import type { PageConfig } from "@gravitypress/schemas";
 import { renderPolarGridSVG } from "./polar";

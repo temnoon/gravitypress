@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@gravitypress/schemas": "workspace:*"
+    "@gravitypress/schemas": "workspace:*",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "tsup": "^8.3.0",
